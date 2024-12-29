@@ -1,41 +1,80 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
+import axios from "axios";
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const goToLogin = () => {
+  console.log(router)
+  router.push('/login');
+};
 
 const greetMsg = ref("");
 const name = ref("");
-
+const weatherAttrList = [{
+  
+}]
 async function greet() {
   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
   greetMsg.value = await invoke("greet", { name: name.value });
 }
+const weatherInfo = ref(
+  {
+  "code": "200",
+  "updateTime": "2020-06-30T22:00+08:00",
+  "fxLink": "http://hfx.link/2ax1",
+  "now": {
+    "obsTime": "2020-06-30T21:40+08:00",
+    "temp": "24",
+    "feelsLike": "26",
+    "icon": "101",
+    "text": "多云",
+    "wind360": "123",
+    "windDir": "东南风",
+    "windScale": "1",
+    "windSpeed": "3",
+    "humidity": "72",
+    "precip": "0.0",
+    "pressure": "1003",
+    "vis": "16",
+    "cloud": "10",
+    "dew": "21"
+  },
+  "refer": {
+    "sources": [
+      "QWeather",
+      "NMC",
+      "ECMWF"
+    ],
+    "license": [
+      "QWeather Developers License"
+    ]
+  }
+})
+const getWeather = async () => {
+  // axios({
+  //   method: 'get',
+  //   url: "https://devapi.qweather.com/v7/weather/now?location=101010100",
+  //   headers: {
+  //     "X-QW-Api-Key": "b05f6318789c472d9c31e7afe7d83ae3"
+  //   }
+  // }).then((res) => {
+  //   console.log(res);
+  // })
+
+}
 </script>
 
 <template>
-  <main class="container">
-    <h1>Welcome to Tauri + Vue</h1>
-
-    <div class="row">
-      <a href="https://vitejs.dev" target="_blank">
-        <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-      </a>
-      <a href="https://tauri.app" target="_blank">
-        <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-      </a>
-      <a href="https://vuejs.org/" target="_blank">
-        <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-      </a>
-    </div>
-    <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
-
-    <form class="row" @submit.prevent="greet">
-      <input id="greet-input" v-model="name" placeholder="Enter a name..." />
-      <button type="submit">Greet</button>
-    </form>
-    <p>{{ greetMsg }}</p>
-  </main>
+  <router-view></router-view>
 </template>
-
+<style>
+body {
+  background-color: #202124;
+}
+</style>
 <style scoped>
 .logo.vite:hover {
   filter: drop-shadow(0 0 2em #747bff);
@@ -45,116 +84,44 @@ async function greet() {
   filter: drop-shadow(0 0 2em #249b73);
 }
 
-</style>
-<style>
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-
-  color: #0f0f0f;
-  background-color: #f6f6f6;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+.login-btn-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }
 
+.login-btn {
+  padding: 8px 16px;
+  background-color: #4A5FBF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background-color: #3A4FA0;
+}
+</style>
+<style>
 .container {
-  margin: 0;
-  padding-top: 10vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   text-align: center;
+  margin: 0 10px;
 }
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
-}
-
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
-}
-
-.row {
+.weather-attr-wrap {
   display: flex;
-  justify-content: center;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
-h1 {
-  text-align: center;
-}
-
-input,
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: #0f0f0f;
-  background-color: #ffffff;
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-button {
-  cursor: pointer;
-}
-
-button:hover {
-  border-color: #396cd8;
-}
-button:active {
-  border-color: #396cd8;
-  background-color: #e8e8e8;
-}
-
-input,
-button {
-  outline: none;
-}
-
-#greet-input {
-  margin-right: 5px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
+  justify-content: space-around;
+  li {
+    list-style: none;
   }
-
-  a:hover {
-    color: #24c8db;
-  }
-
-  input,
-  button {
-    color: #ffffff;
-    background-color: #0f0f0f98;
-  }
-  button:active {
-    background-color: #0f0f0f69;
-  }
+  background-color: rgba(160, 166, 180, 0.1);
+  margin: 10px;
+  border-radius: 12px;
 }
-
+.weather-img {
+  font-size: 78px;
+}
 </style>
