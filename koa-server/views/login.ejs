@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: red;
+            margin-bottom: 1rem;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+    <div class="login-container">
+        <h2 style="text-align: center;">用户登录</h2>
+        <% if (error) { %>
+            <div class="error"><%= error %></div>
+        <% } %>
+        <form id="loginForm" onsubmit="return encryptAndSubmit(event)">
+            <div class="form-group">
+                <label for="username">用户名/邮箱</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">登录</button>
+        </form>
+        <div class="register-link">
+            <a href="/register">还没有账号？立即注册</a>
+        </div>
+    </div>
+
+    <script>
+        const ENCRYPT_KEY = 'your-secret-key-123'; // 加密密钥，需要与服务器端一致
+
+        function encryptAndSubmit(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // 加密密码
+            const encryptedPassword = CryptoJS.AES.encrypt(password, ENCRYPT_KEY).toString();
+
+            // 创建新的 FormData
+            const formData = new FormData();
+            formData.append('username', username);
+            formData.append('password', encryptedPassword);
+
+            // 发送 POST 请求
+            fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                credentials: 'include', // 允许发送 cookies
+                body: JSON.stringify({
+                    username: username,
+                    password: encryptedPassword
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/';
+                } else {
+                    const errorDiv = document.querySelector('.error') || 
+                        document.createElement('div');
+                    errorDiv.className = 'error';
+                    errorDiv.textContent = data.message;
+                    const form = document.getElementById('loginForm');
+                    form.insertBefore(errorDiv, form.firstChild);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // 显示错误信息
+                const errorDiv = document.querySelector('.error') || 
+                    document.createElement('div');
+                errorDiv.className = 'error';
+                errorDiv.textContent = '服务器错误，请稍后重试';
+                const form = document.getElementById('loginForm');
+                form.insertBefore(errorDiv, form.firstChild);
+            });
+
+            return false;
+        }
+    </script>
+</body>
+</html> 
