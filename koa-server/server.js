@@ -14,6 +14,7 @@ const router = new Router();
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const viewRoutes = require('./routes/views');
+const kanbanRoutes = require('./routes/kanban');
 const initializeSocket = require('./socket/chat');
 
 // MongoDB 连接配置
@@ -91,7 +92,7 @@ app.use(viewRoutes.routes()).use(viewRoutes.allowedMethods());
 app.use(router.routes()).use(router.allowedMethods());
 app.use(authRoutes.routes()).use(authRoutes.allowedMethods());
 app.use(userRoutes.routes()).use(userRoutes.allowedMethods());
-
+app.use(kanbanRoutes.routes()).use(kanbanRoutes.allowedMethods());
 // 创建 HTTP 服务器
 const server = http.createServer(app.callback());
 

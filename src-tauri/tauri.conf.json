@@ -12,14 +12,14 @@
   "app": {
     "windows": [
       {
-        "title": "shyi-weather",
-        "width": 800,
-        "height": 600
+        "label": "main",
+        "title": "登录",
+        "width": 1200,
+        "height": 600,
+        "resizable": true,
+        "center": true
       }
-    ],
-    "security": {
-      "csp": null
-    }
+    ]
   },
   "bundle": {
     "active": true,
